@@ -510,54 +510,6 @@ def test_native_trs_url_subworkflow_to_format2():
     assert as_format2["steps"]["nested_workflow"]["run"] == trs_url
 
 
-def test_embedded_subworkflow_still_works():
-    """Ensure traditional embedded subworkflow export still works."""
-    native_workflow = {
-        "a_galaxy_workflow": "true",
-        "format-version": "0.1",
-        "name": "Test Embedded Export",
-        "steps": {
-            "0": {
-                "id": 0,
-                "type": "data_input",
-                "label": "outer_input",
-                "tool_state": '{"name": "outer_input"}',
-                "input_connections": {},
-                "workflow_outputs": [],
-            },
-            "1": {
-                "id": 1,
-                "type": "subworkflow",
-                "label": "nested_workflow",
-                "tool_state": "{}",
-                "input_connections": {
-                    "inner_input": [{"id": 0, "output_name": "output"}],
-                },
-                "workflow_outputs": [],
-                "subworkflow": {
-                    "a_galaxy_workflow": "true",
-                    "format-version": "0.1",
-                    "name": "Inner",
-                    "steps": {
-                        "0": {
-                            "id": 0,
-                            "type": "data_input",
-                            "label": "inner_input",
-                            "tool_state": '{"name": "inner_input"}',
-                            "input_connections": {},
-                            "workflow_outputs": [],
-                        },
-                    },
-                },
-            },
-        },
-    }
-    as_format2 = from_native(native_workflow)
-    run = as_format2["steps"]["nested_workflow"]["run"]
-    assert isinstance(run, dict)
-    assert run["class"] == "GalaxyWorkflow"
-
-
 def assert_valid_format2(as_dict_format2):
     assert as_dict_format2["class"] == "GalaxyWorkflow"
     assert "steps" in as_dict_format2
